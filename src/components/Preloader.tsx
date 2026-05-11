@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const Preloader: React.FC = () => {
+interface PreloaderProps {
+  isLoading: boolean;
+}
+
+const Preloader: React.FC<PreloaderProps> = ({ isLoading }) => {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setIsVisible(false), 500);
-          return 100;
+        if (prev >= 90) {
+          if (!isLoading) {
+            clearInterval(interval);
+            setTimeout(() => setIsVisible(false), 500);
+            return 100;
+          }
+          return 95; // Wait at 95% until loading finishes
         }
         return prev + Math.random() * 15;
       });
     }, 150);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isLoading]);
 
   return (
     <AnimatePresence>

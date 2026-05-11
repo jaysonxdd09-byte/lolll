@@ -55,6 +55,7 @@ export default function App() {
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [heroSlides, setHeroSlides] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     localStorage.setItem('test_one_saved_products', JSON.stringify(savedProducts));
@@ -94,50 +95,47 @@ export default function App() {
 
     fetchData();
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        // Immediate fallback for primary admin
-        if (session.user.email?.toLowerCase() === 'aither200929@gmail.com') {
-          console.log('Admin detected via email:', session.user.email);
-          setUserRole('admin');
-          return; // Skip profile fetch to avoid 500 errors
-        }
-
-        try {
-          const { data: profile, error: profileError } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-          if (!profileError && profile) {
-            setUserRole(profile.role);
+    // 1. Initial Session Check
+    const initAuth = async () => {
+      try {
+        setIsAuthLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          setUser(session.user);
+          // Immediate role check
+          if (session.user.email?.toLowerCase() === 'aither200929@gmail.com') {
+            setUserRole('admin');
+          } else {
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+            if (profile) setUserRole(profile.role);
           }
-        } catch (err) {
-          console.error('Caught error in profile fetch:', err);
         }
-      } else {
-        setUserRole('customer');
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+      } finally {
+        setIsAuthLoading(false);
       }
-    });
+    };
 
+    initAuth();
+
+    // 2. Auth State Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.email);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
-        // Immediate fallback for primary admin
         if (session.user.email?.toLowerCase() === 'aither200929@gmail.com') {
           setUserRole('admin');
-          return; // Skip profile fetch to avoid 500 errors
-        }
-
-        try {
-          const { data: profile, error: profileError } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-          if (!profileError && profile) {
-            setUserRole(profile.role);
-          }
-        } catch (err) {
-          console.error('Caught error in profile fetch on auth change:', err);
+        } else {
+          const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+          if (profile) setUserRole(profile.role);
         }
       } else {
         setUserRole('customer');
         if (event === 'SIGNED_OUT') {
-          setView('home'); // ONLY reset on explicit sign out
+          setView('home');
         }
       }
     });
@@ -298,7 +296,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-100 selection:text-gold-800">
-      <Preloader />
+      <Preloader isLoading={isLoading || isAuthLoading} />
       
       <CheckoutForm 
         isOpen={isCheckoutOpen} 
