@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, ShoppingCart, Trash2, Plus, Minus, ShoppingBag, Loader2 } from 'lucide-react';
 import { Product } from '../data/products';
 import { supabase } from '../lib/supabaseClient';
+import CheckoutForm, { ShippingDetails } from './CheckoutForm';
 
 interface CartItem {
   product: Product;
@@ -21,6 +22,7 @@ interface CartSidebarProps {
 
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRemove, onUpdateQuantity, user, onCheckoutComplete }) => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
 
   // Group items by product
   const groupedItems: CartItem[] = [];
@@ -40,26 +42,30 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRem
   const cartItems = Array.from(itemMap.values());
   const totalPrice = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const handleCheckout = async () => {
+  const handleCheckoutClick = () => {
     if (!user) {
       alert('Please sign in to checkout.');
       return;
     }
-
     if (cartItems.length === 0) return;
+    setShowCheckoutForm(true);
+  };
 
+  const handleFinalCheckout = async (details: ShippingDetails) => {
     setIsCheckingOut(true);
     try {
       // 1. Create order
+      const fullAddress = `${details.address}, ${details.city}, ${details.state} - ${details.pincode}`;
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
-          customer_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Customer',
+          customer_name: details.fullName,
           email: user.email,
           total_amount: totalPrice,
           status: 'Pending',
-          shipping_address: 'Pending Address' // Hardcoded for now
+          shipping_address: fullAddress,
+          phone: details.phone
         })
         .select()
         .single();
@@ -81,7 +87,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRem
       if (itemsError) throw itemsError;
 
       // 3. Complete checkout
+      setShowCheckoutForm(false);
       onCheckoutComplete?.();
+      alert('Order placed successfully! We will contact you soon.');
     } catch (error) {
       console.error('Error during checkout:', error);
       alert('There was an error processing your order. Please try again.');
@@ -212,7 +220,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRem
                 </div>
                 <p className="text-[10px] text-gray-400">Shipping and taxes calculated at checkout.</p>
                 <button 
-                  onClick={handleCheckout}
+                  onClick={handleCheckoutClick}
                   disabled={isCheckingOut}
                   className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-xl shadow-gray-900/10 flex items-center justify-center disabled:opacity-50"
                 >
@@ -229,6 +237,13 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRem
           </motion.div>
         </div>
       )}
+      
+      <CheckoutForm 
+        isOpen={showCheckoutForm}
+        onClose={() => setShowCheckoutForm(false)}
+        onSubmit={handleFinalCheckout}
+        totalAmount={totalPrice}
+      />
     </AnimatePresence>
   );
 };

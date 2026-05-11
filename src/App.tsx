@@ -27,12 +27,15 @@ import BlogsPage from './components/BlogsPage';
 import BlogDetailsPage from './components/BlogDetailsPage';
 import FAQ from './components/FAQ';
 import Preloader from './components/Preloader';
+import CheckoutForm, { ShippingDetails } from './components/CheckoutForm';
 
 export default function App() {
   const [cart, setCart] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'home' | 'certificates' | 'search' | 'product-details' | 'admin' | 'wishlist' | 'blogs' | 'blog-details' | 'faq'>('home');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutItem, setCheckoutItem] = useState<Product | null>(null);
   const [savedProducts, setSavedProducts] = useState<string[]>(() => {
     const saved = localStorage.getItem('test_one_saved_products');
     if (saved) {
@@ -214,30 +217,66 @@ export default function App() {
     );
   };
 
-  const handleBuyNow = async (product: any) => {
-    const amount = (product.price || 500) * 100; // in paisa
-    
-    const options = {
-      key: "rzp_test_YOUR_KEY_HERE", // Replace with your key
-      amount: amount,
-      currency: "INR",
-      name: "Test One Medical",
-      description: `Purchase ${product.name}`,
-      image: "/images/logo/logo.png",
-      handler: function (response: any) {
-        alert("Payment Successful! Transaction ID: " + response.razorpay_payment_id);
-      },
-      prefill: {
-        name: user?.user_metadata?.full_name || "",
-        email: user?.email || "",
-      },
-      theme: {
-        color: "#B8860B",
-      },
-    };
+  const handleBuyNow = (product: any) => {
+    setCheckoutItem(product);
+    setIsCheckoutOpen(true);
+  };
 
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
+  const handleCheckoutSubmit = async (details: ShippingDetails) => {
+    if (!checkoutItem) return;
+
+    try {
+      // 1. Create order in Supabase
+      const fullAddress = `${details.address}, ${details.city}, ${details.state} - ${details.pincode}`;
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user?.id || null,
+          customer_name: details.fullName,
+          email: user?.email || "guest@testone.com",
+          total_amount: checkoutItem.price,
+          status: 'Pending',
+          shipping_address: fullAddress,
+          phone: details.phone
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // 2. Open Razorpay
+      const amount = (checkoutItem.price || 500) * 100; // in paisa
+      
+      const options = {
+        key: "rzp_test_YOUR_KEY_HERE", 
+        amount: amount,
+        currency: "INR",
+        name: "Test One Medical",
+        description: `Purchase ${checkoutItem.name}`,
+        image: "/images/logo/logo.png",
+        handler: async function (response: any) {
+          // Update order status on success
+          await supabase.from('orders').update({ status: 'Paid', payment_id: response.razorpay_payment_id }).eq('id', orderData.id);
+          alert("Payment Successful! Order ID: " + orderData.id);
+          setIsCheckoutOpen(false);
+          setCheckoutItem(null);
+        },
+        prefill: {
+          name: details.fullName,
+          email: user?.email || "",
+          contact: details.phone
+        },
+        theme: {
+          color: "#B8860B",
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      alert('Failed to place order: ' + err.message);
+    }
   };
 
   const removeFromCart = (productId: string) => {
@@ -260,6 +299,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-100 selection:text-gold-800">
       <Preloader />
+      
+      <CheckoutForm 
+        isOpen={isCheckoutOpen} 
+        onClose={() => { setIsCheckoutOpen(false); setCheckoutItem(null); }}
+        onSubmit={handleCheckoutSubmit}
+        totalAmount={checkoutItem?.price || 0}
+      />
+
       <Navbar 
         cartCount={cart.length} 
         savedCount={savedProducts.length}
