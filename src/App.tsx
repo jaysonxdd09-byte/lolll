@@ -19,12 +19,11 @@ import CartSidebar from './components/CartSidebar';
 import SloganMarquee from './components/SloganMarquee';
 import PresenceSection from './components/PresenceSection';
 import DistributorInquirySection from './components/DistributorInquirySection';
-import BlogsSection from './components/BlogsSection';
+import BlogsSection, { BlogPost } from './components/BlogsSection';
 import { supabase } from './lib/supabaseClient';
 import AdminDashboard from './components/admin/AdminDashboard';
 import BlogsPage from './components/BlogsPage';
 import BlogDetailsPage from './components/BlogDetailsPage';
-import { BlogPost } from './components/BlogsSection';
 
 export default function App() {
   const [cart, setCart] = useState<Product[]>([]);
