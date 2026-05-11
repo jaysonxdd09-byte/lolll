@@ -106,7 +106,7 @@ export const products: Product[] = [
     name: 'Foley Catheter (10 Pack)',
     price: 85.00,
     category: 'Catheters & Drainages',
-    image: 'https://images.unsplash.com/photo-1579154236598-c64e6d408b63?auto=format&fit=crop&q=80&w=400',
+    image: '/images/foley_catheter.png',
     description: 'Sterile 2-way foley catheter, latex free silicone coated.',
     rating: 4.6
   },
@@ -133,7 +133,7 @@ export const products: Product[] = [
     name: 'Surgical Gauze Swabs',
     price: 15.00,
     category: 'Surgical Supplies',
-    image: 'https://images.unsplash.com/photo-1628177142898-93e36e4e3a4e?auto=format&fit=crop&q=80&w=400',
+    image: '/images/gauze_swabs.png',
     description: 'Highly absorbent cotton gauze swabs for surgical procedures.',
     rating: 4.6
   },
@@ -142,7 +142,7 @@ export const products: Product[] = [
     name: 'Insulin Syringes (100 Pack)',
     price: 12.99,
     category: 'Syringes & Needles',
-    image: 'https://images.unsplash.com/photo-1628177142898-93e36e4e3a4e?auto=format&fit=crop&q=80&w=400',
+    image: '/images/gauze_swabs.png',
     description: 'Ultra-fine insulin syringes with attached needles, 1ml capacity.',
     rating: 4.8
   },
