@@ -16,7 +16,7 @@ export const products: Product[] = [
     name: 'Standard Surgical Scissors',
     price: 15.99,
     category: 'Instruments',
-    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400',
+    image: '/images/surgical_scissors.png',
     description: 'Stainless steel surgical scissors, precision ground for clean cuts.',
     rating: 4.8
   },
@@ -34,7 +34,7 @@ export const products: Product[] = [
     name: 'Disposable Face Masks (50 Pack)',
     price: 8.99,
     category: 'Surgical Wear',
-    image: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&q=80&w=400',
+    image: '/images/disposable_masks.png',
     description: '3-ply protective face masks with elastic earloops.',
     rating: 4.7
   },
@@ -43,7 +43,7 @@ export const products: Product[] = [
     name: 'Digital Blood Pressure Monitor',
     price: 45.00,
     category: 'Diagnostic',
-    image: 'https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?auto=format&fit=crop&q=80&w=400',
+    image: '/images/bp_monitor.png',
     description: 'Automatic upper arm blood pressure monitor with large LCD display.',
     rating: 4.9
   },
@@ -52,7 +52,7 @@ export const products: Product[] = [
     name: 'Wound Care Dressing Kit',
     price: 22.00,
     category: 'Wound Care',
-    image: 'https://images.unsplash.com/photo-1583324113626-70df0f4deaab?auto=format&fit=crop&q=80&w=400',
+    image: '/images/wound_care_kit.png',
     description: 'Complete sterile dressing kit for minor surgical wounds.',
     rating: 4.6
   },
@@ -70,7 +70,7 @@ export const products: Product[] = [
     name: 'Pulse Oximeter',
     price: 34.00,
     category: 'Diagnostic',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=400',
+    image: '/images/pulse_oximeter.png',
     description: 'Fingertip pulse oximeter for oxygen saturation monitoring.',
     rating: 4.8
   },
@@ -97,7 +97,7 @@ export const products: Product[] = [
     name: 'Surgical Scalpel No. 3',
     price: 12.00,
     category: 'Instruments',
-    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=400',
+    image: '/images/surgical_scalpel.png',
     description: 'Precision scalpel handle with stainless steel grip.',
     rating: 4.8
   },
@@ -115,7 +115,7 @@ export const products: Product[] = [
     name: 'Knee Support Brace',
     price: 24.50,
     category: 'Orthopaedic Products',
-    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400',
+    image: '/images/knee_brace.png',
     description: 'Neoprene adjustable knee support for joint stability.',
     rating: 4.7
   },
@@ -124,7 +124,7 @@ export const products: Product[] = [
     name: 'Ostomy Pouch Set',
     price: 32.00,
     category: 'Ostomy Care',
-    image: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&q=80&w=400',
+    image: '/images/ostomy_pouch.png',
     description: 'Drainable ostomy pouch with skin barrier and high security seal.',
     rating: 4.5
   },
@@ -142,7 +142,7 @@ export const products: Product[] = [
     name: 'Insulin Syringes (100 Pack)',
     price: 12.99,
     category: 'Syringes & Needles',
-    image: '/images/gauze_swabs.png',
+    image: '/images/insulin_syringes.png',
     description: 'Ultra-fine insulin syringes with attached needles, 1ml capacity.',
     rating: 4.8
   },
@@ -151,7 +151,7 @@ export const products: Product[] = [
     name: 'Hydrocolloid Dressing',
     price: 18.25,
     category: 'Wound Care',
-    image: 'https://images.unsplash.com/photo-1603398938378-e54eab446ddd?auto=format&fit=crop&q=80&w=400',
+    image: '/images/hydrocolloid_dressing.png',
     description: 'Self-adhesive hydrocolloid dressing for rapid wound healing.',
     rating: 4.7
   },
@@ -178,7 +178,7 @@ export const products: Product[] = [
     name: 'Sterile Operating Gown',
     price: 45.00,
     category: 'Surgical Wear',
-    image: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&q=80&w=400',
+    image: '/images/surgical_gown.png',
     description: 'AAMI Level 4 reinforced sterile isolation gown.',
     rating: 4.8
   }
