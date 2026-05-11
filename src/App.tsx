@@ -26,6 +26,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import BlogsPage from './components/BlogsPage';
 import BlogDetailsPage from './components/BlogDetailsPage';
 import FAQ from './components/FAQ';
+import Preloader from './components/Preloader';
 
 export default function App() {
   const [cart, setCart] = useState<Product[]>([]);
@@ -258,6 +259,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-gold-100 selection:text-gold-800">
+      <Preloader />
       <Navbar 
         cartCount={cart.length} 
         savedCount={savedProducts.length}
