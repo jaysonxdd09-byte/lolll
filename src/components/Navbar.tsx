@@ -8,10 +8,10 @@ interface NavbarProps {
   cartCount: number;
   savedCount?: number;
   onCategorySelect?: (category: string) => void;
-  onViewChange?: (view: 'home' | 'certificates' | 'admin' | 'search' | 'product-details' | 'wishlist' | 'blogs') => void;
+  onViewChange?: (view: 'home' | 'certificates' | 'admin' | 'search' | 'product-details' | 'wishlist' | 'blogs' | 'faq') => void;
   onSearch?: (query: string) => void;
   searchQuery?: string;
-  currentView?: 'home' | 'certificates' | 'admin' | 'search' | 'product-details' | 'wishlist' | 'blogs';
+  currentView?: 'home' | 'certificates' | 'admin' | 'search' | 'product-details' | 'wishlist' | 'blogs' | 'faq';
   onCartToggle?: () => void;
   user?: any;
   userRole?: 'customer' | 'staff' | 'admin';
@@ -77,7 +77,7 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <div className="max-w-[95%] mx-auto px-4 sm:px-8 bg-white">
-        <div className="flex justify-between items-center h-16 sm:h-24">
+        <div className="flex items-center gap-2 md:gap-3 lg:gap-4 h-16 sm:h-24">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2 cursor-pointer group" onClick={() => onViewChange?.('home')}>
             <div className="h-12 sm:h-20 lg:h-24 w-auto flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
@@ -91,8 +91,27 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
             </div>
           </div>
 
+          {/* Inline nav — Home, About, Presence, Brands (between logo & search, md+) */}
+          <div className="hidden md:flex items-center gap-x-2 lg:gap-x-3 flex-shrink-0">
+            {[
+              { label: 'Home', action: () => onViewChange?.('home') },
+              { label: 'About Us', action: () => goToSection('about') },
+              { label: 'Presence', action: () => goToSection('presence') },
+              { label: 'Brands', action: () => goToSection('brands') },
+            ].map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => item.action()}
+                className="px-3 py-1.5 lg:px-4 lg:py-2 rounded-xl text-[10px] lg:text-[11px] font-extrabold uppercase tracking-widest text-gray-700 hover:text-gold-700 hover:bg-gold-50 hover:border-gold-200 border-2 border-gray-50 bg-white transition-all duration-300 shadow-sm hover:shadow-md whitespace-nowrap"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
           {/* Mid Section - Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-2xl px-8" ref={searchRef}>
+          <div className="hidden md:flex flex-1 min-w-0 max-w-2xl px-2 lg:px-6" ref={searchRef}>
             <div className="relative w-full flex items-center bg-white border-2 border-gray-100 rounded-xl focus-within:border-gold-500 transition-all shadow-sm">
               <div className="relative group/cat">
                 <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-r border-gray-100 rounded-l-xl hover:bg-gray-100 transition-colors">
@@ -147,7 +166,7 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-4 lg:gap-8 text-gray-700">
+          <div className="flex items-center gap-4 lg:gap-8 text-gray-700 ml-auto flex-shrink-0">
             {/* Auth - Desktop */}
             <div className="hidden lg:flex items-center gap-4 border-r border-gray-100 pr-8 mr-2">
               {(userRole === 'admin' || user?.email?.toLowerCase() === 'aither200929@gmail.com') && (
@@ -262,6 +281,9 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
               </div>
               <span className="text-[11.5px] font-bold text-gray-700 group-hover:text-gold-600 transition-colors uppercase tracking-tight">Saved Items</span>
             </button>
+            <button className={`flex items-center gap-2 group cursor-pointer whitespace-nowrap py-2.5 ${currentView === 'faq' ? 'text-gold-600 border-b-2 border-gold-500' : ''}`} onClick={() => onViewChange?.('faq')}>
+              <span className="text-[11.5px] font-bold text-gray-700 group-hover:text-gold-600 transition-colors uppercase tracking-tight">FAQ</span>
+            </button>
             <button className="flex items-center gap-2 group cursor-pointer whitespace-nowrap py-2.5" onClick={() => onCategorySelect?.('All')}>
               <span className="text-[11.5px] font-bold text-gray-700 group-hover:text-gold-600 transition-colors uppercase tracking-tight">View All</span>
               <ChevronDown className="h-3 w-3 text-gray-400 group-hover:text-gold-500 transition-colors" />
@@ -287,6 +309,9 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
             {/* Mobile Nav Links */}
             <div className="flex flex-col gap-1 text-xs font-bold uppercase tracking-widest text-gray-800">
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onViewChange?.('home'); setIsMenuOpen(false); }}>Home</button>
+              <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('about'); setIsMenuOpen(false); }}>About Us</button>
+              <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('presence'); setIsMenuOpen(false); }}>Presence</button>
+              <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('brands'); setIsMenuOpen(false); }}>Brands</button>
               {(userRole === 'admin' || user?.email?.toLowerCase() === 'aither200929@gmail.com') && (
                 <button className="py-3 px-2 text-left border-b border-gray-50 text-gold-600 font-black hover:text-gold-700 transition-colors" onClick={() => { onViewChange?.('admin'); setIsMenuOpen(false); }}>Admin Portal</button>
               )}
@@ -294,6 +319,7 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onViewChange?.('blogs'); setIsMenuOpen(false); }}>Blogs</button>
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onViewChange?.('wishlist'); setIsMenuOpen(false); }}>Saved Items</button>
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('distributor-inquiry'); setIsMenuOpen(false); }}>Distributor Inquiry</button>
+              <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onViewChange?.('faq'); setIsMenuOpen(false); }}>FAQ</button>
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onViewChange?.('certificates'); setIsMenuOpen(false); }}>Certifications</button>
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ShoppingCart, Zap, ShieldCheck, Truck, RefreshCcw, Star, Plus, Minus, ChevronRight, CheckCircle2, Package, Heart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Zap, ShieldCheck, Truck, RefreshCcw, Star, Plus, Minus, ChevronRight, CheckCircle2, Package, Heart, MessageCircle } from 'lucide-react';
 import { Product } from '../data/products';
 import ProductCard from './ProductCard';
 
@@ -117,21 +117,32 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                   <button onClick={() => handleQuantityChange(1)} disabled={product.stock_quantity === 0} className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-gold-600 transition-colors disabled:opacity-50"><Plus className="w-3 h-3" /></button>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3">
                 {product.stock_quantity === 0 ? (
                   <div className="flex-1 bg-red-50 text-red-600 border border-red-100 py-4 rounded-xl font-bold text-xs uppercase tracking-widest text-center shadow-sm">
                     Temporarily Out of Stock
                   </div>
                 ) : (
                   <>
-                    <button onClick={() => onAddToCart(product, quantity)} className="flex-1 bg-gray-900 text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg flex items-center justify-center gap-2">
-                      <ShoppingCart className="w-4 h-4" /> Add to Cart
-                    </button>
-                    <button onClick={() => onBuyNow?.(product)} className="flex-1 bg-gold-500 text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg flex items-center justify-center gap-2">
-                      <Zap className="w-4 h-4" /> Buy Now
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button onClick={() => onAddToCart(product, quantity)} className="flex-1 bg-gray-900 text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg flex items-center justify-center gap-2">
+                        <ShoppingCart className="w-4 h-4" /> Add to Cart
+                      </button>
+                      <button onClick={() => onBuyNow?.(product)} className="flex-1 bg-gold-500 text-white py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg flex items-center justify-center gap-2">
+                        <Zap className="w-4 h-4" /> Buy Now
+                      </button>
+                    </div>
                   </>
                 )}
+                <button 
+                  onClick={() => {
+                    const message = `Hello, I'm interested in a bulk order for ${product.name} (ID: ${product.id}). Could you please provide a quote for institutional supply?`;
+                    window.open(`https://wa.me/919999999999?text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                  className="w-full bg-emerald-50 text-emerald-700 border border-emerald-100 py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-100 transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" /> Bulk Order Inquiry (WhatsApp)
+                </button>
               </div>
             </div>
 

@@ -25,12 +25,13 @@ import { supabase } from './lib/supabaseClient';
 import AdminDashboard from './components/admin/AdminDashboard';
 import BlogsPage from './components/BlogsPage';
 import BlogDetailsPage from './components/BlogDetailsPage';
+import FAQ from './components/FAQ';
 
 export default function App() {
   const [cart, setCart] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [view, setView] = useState<'home' | 'certificates' | 'search' | 'product-details' | 'admin' | 'wishlist' | 'blogs' | 'blog-details'>('home');
+  const [view, setView] = useState<'home' | 'certificates' | 'search' | 'product-details' | 'admin' | 'wishlist' | 'blogs' | 'blog-details' | 'faq'>('home');
   const [savedProducts, setSavedProducts] = useState<string[]>(() => {
     const saved = localStorage.getItem('test_one_saved_products');
     if (saved) {
@@ -264,7 +265,7 @@ export default function App() {
         onSearch={handleSearch}
         searchQuery={searchQuery}
         onViewChange={handleViewChange}
-        currentView={view === 'certificates' ? 'certificates' : view === 'wishlist' ? 'wishlist' : view === 'blogs' ? 'blogs' : 'home'}
+        currentView={view === 'certificates' ? 'certificates' : view === 'wishlist' ? 'wishlist' : view === 'blogs' ? 'blogs' : view === 'faq' ? 'faq' : 'home'}
         onCartToggle={() => setIsCartOpen(true)}
         user={user}
         userRole={userRole}
@@ -302,7 +303,7 @@ export default function App() {
             }} />
 
             {/* Global Catalog Section */}
-            <section className="py-12 sm:py-16 bg-gray-50/50">
+            <section id="catalog" className="py-12 sm:py-16 bg-gray-50/50">
               <div className="max-w-[95%] mx-auto px-4 sm:px-8">
                 <div className="text-center mb-12 sm:mb-20 max-w-2xl mx-auto">
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-500 mb-4 block">Product Catalog</span>
@@ -421,6 +422,13 @@ export default function App() {
           <BlogsPage onBack={() => handleViewChange('home')} onBlogClick={handleBlogClick} />
         ) : view === 'blog-details' && selectedBlog ? (
           <BlogDetailsPage blog={selectedBlog} onBack={() => handleViewChange('blogs')} />
+        ) : view === 'faq' ? (
+          <div className="pt-16 sm:pt-24">
+            <FAQ />
+            <div className="max-w-4xl mx-auto px-4 sm:px-8 pb-16">
+              <button onClick={() => handleViewChange('home')} className="bg-gray-900 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-gold-600 transition-all">Back to Home</button>
+            </div>
+          </div>
         ) : (
           <SearchResultsPage 
             query={searchQuery}

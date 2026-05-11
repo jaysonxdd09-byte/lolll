@@ -43,6 +43,7 @@ export default function UsersTab() {
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 border-b border-gray-200 text-gray-500">
             <tr>
+              <th className="px-6 py-4 font-medium">Email</th>
               <th className="px-6 py-4 font-medium">User ID</th>
               <th className="px-6 py-4 font-medium">Joined</th>
               <th className="px-6 py-4 font-medium">Role</th>
@@ -52,6 +53,7 @@ export default function UsersTab() {
           <tbody className="divide-y divide-gray-100">
             {users.map((u) => (
               <tr key={u.id} className="hover:bg-gray-50/50">
+                <td className="px-6 py-4 text-gray-900 font-medium">{u.email || 'N/A'}</td>
                 <td className="px-6 py-4 font-mono text-xs text-gray-500">{u.id}</td>
                 <td className="px-6 py-4 text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
                 <td className="px-6 py-4">

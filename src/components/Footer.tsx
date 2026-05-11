@@ -3,7 +3,7 @@ import { Facebook, Twitter, Instagram } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-natural-200/50 font-sans">
+    <footer id="about" className="bg-white border-t border-natural-200/50 font-sans">
       <div className="max-w-[95%] mx-auto px-4 sm:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Logo & About */}
@@ -33,6 +33,7 @@ export default function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-widest text-natural-600 mb-6 font-sans">Navigation</h4>
             <ul className="space-y-3 text-xs uppercase tracking-widest font-bold text-natural-400 font-sans">
               <li><a href="#" className="hover:text-natural-600 transition-colors">Catalog</a></li>
+              <li><button onClick={() => window.dispatchEvent(new CustomEvent('change-view', { detail: 'faq' }))} className="hover:text-natural-600 transition-colors text-left uppercase">FAQ</button></li>
               <li><a href="#" className="hover:text-natural-600 transition-colors">Wholesale</a></li>
               <li><a href="#" className="hover:text-natural-600 transition-colors">ISO Standards</a></li>
               <li><button onClick={() => window.dispatchEvent(new CustomEvent('change-view', { detail: 'admin' }))} className="hover:text-gold-500 transition-colors text-left">Staff Portal</button></li>

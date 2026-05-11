@@ -8,6 +8,7 @@ export interface Product {
   rating: number;
   brand?: string;
   reviews?: number;
+  stock_quantity: number;
 }
 
 export const products: Product[] = [
@@ -18,7 +19,8 @@ export const products: Product[] = [
     category: 'Instruments',
     image: '/images/surgical_scissors.png',
     description: 'Stainless steel surgical scissors, precision ground for clean cuts.',
-    rating: 4.8
+    rating: 4.8,
+    stock_quantity: 12
   },
   {
     id: '2',
@@ -27,7 +29,8 @@ export const products: Product[] = [
     category: 'Surgical Wear',
     image: '/images/gloves.png',
     description: 'Powder-free latex gloves, superior grip and tactile sensitivity.',
-    rating: 4.5
+    rating: 4.5,
+    stock_quantity: 0
   },
   {
     id: '3',
@@ -36,7 +39,8 @@ export const products: Product[] = [
     category: 'Surgical Wear',
     image: '/images/disposable_masks.png',
     description: '3-ply protective face masks with elastic earloops.',
-    rating: 4.7
+    rating: 4.7,
+    stock_quantity: 45
   },
   {
     id: '4',
@@ -45,7 +49,8 @@ export const products: Product[] = [
     category: 'Diagnostic',
     image: '/images/bp_monitor.png',
     description: 'Automatic upper arm blood pressure monitor with large LCD display.',
-    rating: 4.9
+    rating: 4.9,
+    stock_quantity: 8
   },
   {
     id: '5',
@@ -54,7 +59,8 @@ export const products: Product[] = [
     category: 'Wound Care',
     image: '/images/wound_care_kit.png',
     description: 'Complete sterile dressing kit for minor surgical wounds.',
-    rating: 4.6
+    rating: 4.6,
+    stock_quantity: 15
   },
   {
     id: '6',
@@ -63,7 +69,8 @@ export const products: Product[] = [
     category: 'Wound Care',
     image: '/images/gauze.png',
     description: 'Highly absorbent sterile cotton gauze pads.',
-    rating: 4.4
+    rating: 4.4,
+    stock_quantity: 0
   },
   {
     id: '7',
@@ -72,7 +79,8 @@ export const products: Product[] = [
     category: 'Diagnostic',
     image: '/images/pulse_oximeter.png',
     description: 'Fingertip pulse oximeter for oxygen saturation monitoring.',
-    rating: 4.8
+    rating: 4.8,
+    stock_quantity: 20
   },
   {
     id: '8',
@@ -81,7 +89,8 @@ export const products: Product[] = [
     category: 'Diagnostic',
     image: '/images/thermometer.png',
     description: 'Non-contact infrared forehead thermometer.',
-    rating: 4.7
+    rating: 4.7,
+    stock_quantity: 10
   },
   {
     id: '9',
@@ -90,7 +99,8 @@ export const products: Product[] = [
     category: 'Diagnostic',
     image: '/images/glucometer.png',
     description: 'Blood glucose monitoring system with 50 test strips.',
-    rating: 4.9
+    rating: 4.9,
+    stock_quantity: 5
   },
   {
     id: '10',
@@ -99,7 +109,8 @@ export const products: Product[] = [
     category: 'Instruments',
     image: '/images/surgical_scalpel.png',
     description: 'Precision scalpel handle with stainless steel grip.',
-    rating: 4.8
+    rating: 4.8,
+    stock_quantity: 18
   },
   {
     id: '12',
@@ -108,7 +119,8 @@ export const products: Product[] = [
     category: 'Catheters & Drainages',
     image: '/images/foley_catheter.png',
     description: 'Sterile 2-way foley catheter, latex free silicone coated.',
-    rating: 4.6
+    rating: 4.6,
+    stock_quantity: 7
   },
   {
     id: '13',
@@ -117,7 +129,8 @@ export const products: Product[] = [
     category: 'Orthopaedic Products',
     image: '/images/knee_brace.png',
     description: 'Neoprene adjustable knee support for joint stability.',
-    rating: 4.7
+    rating: 4.7,
+    stock_quantity: 25
   },
   {
     id: '14',
@@ -126,7 +139,8 @@ export const products: Product[] = [
     category: 'Ostomy Care',
     image: '/images/ostomy_pouch.png',
     description: 'Drainable ostomy pouch with skin barrier and high security seal.',
-    rating: 4.5
+    rating: 4.5,
+    stock_quantity: 12
   },
   {
     id: '15',
@@ -135,7 +149,8 @@ export const products: Product[] = [
     category: 'Surgical Supplies',
     image: '/images/gauze_swabs.png',
     description: 'Highly absorbent cotton gauze swabs for surgical procedures.',
-    rating: 4.6
+    rating: 4.6,
+    stock_quantity: 0
   },
   {
     id: '16',
@@ -144,7 +159,8 @@ export const products: Product[] = [
     category: 'Syringes & Needles',
     image: '/images/insulin_syringes.png',
     description: 'Ultra-fine insulin syringes with attached needles, 1ml capacity.',
-    rating: 4.8
+    rating: 4.8,
+    stock_quantity: 50
   },
   {
     id: '17',
@@ -153,7 +169,8 @@ export const products: Product[] = [
     category: 'Wound Care',
     image: '/images/hydrocolloid_dressing.png',
     description: 'Self-adhesive hydrocolloid dressing for rapid wound healing.',
-    rating: 4.7
+    rating: 4.7,
+    stock_quantity: 30
   },
   {
     id: '18',
@@ -162,7 +179,8 @@ export const products: Product[] = [
     category: 'Diagnostic',
     image: 'https://images.unsplash.com/photo-1579154391796-52c67cf8dcbc?auto=format&fit=crop&q=80&w=400',
     description: 'Advanced portable 12-lead ECG monitor for clinical use.',
-    rating: 5.0
+    rating: 5.0,
+    stock_quantity: 3
   },
   {
     id: '19',
@@ -171,7 +189,8 @@ export const products: Product[] = [
     category: 'Instruments',
     image: 'https://images.unsplash.com/photo-1584032791593-51833075d9fb?auto=format&fit=crop&q=80&w=400',
     description: 'Self-retaining abdominal retractor set with multiple blades.',
-    rating: 4.9
+    rating: 4.9,
+    stock_quantity: 5
   },
   {
     id: '20',
@@ -180,7 +199,8 @@ export const products: Product[] = [
     category: 'Surgical Wear',
     image: '/images/surgical_gown.png',
     description: 'AAMI Level 4 reinforced sterile isolation gown.',
-    rating: 4.8
+    rating: 4.8,
+    stock_quantity: 15
   }
 ];
 
