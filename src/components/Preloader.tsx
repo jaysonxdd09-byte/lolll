@@ -38,7 +38,7 @@ const Preloader: React.FC = () => {
               className="flex justify-center"
             >
               <img 
-                src="/images/logo/test_one_full_logo.png" 
+                src="/images/loading/loading.png" 
                 alt="Test One Medical Solutions" 
                 className="w-full h-auto max-w-[280px] sm:max-w-[360px]"
               />
