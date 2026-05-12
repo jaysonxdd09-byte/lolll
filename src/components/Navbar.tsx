@@ -169,7 +169,7 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
           <div className="flex items-center gap-4 lg:gap-8 text-gray-700 ml-auto flex-shrink-0">
             {/* Auth - Desktop */}
             <div className="hidden lg:flex items-center gap-4 border-r border-gray-100 pr-8 mr-2">
-              {(userRole === 'admin' || user?.email?.toLowerCase() === 'aither200929@gmail.com') && (
+              {(userRole === 'admin' || ['aither200929@gmail.com', 'maahi911111@gmail.com'].includes(user?.email?.toLowerCase())) && (
                 <button 
                   onClick={() => onViewChange?.('admin')} 
                   className="hidden md:flex items-center gap-2 bg-gold-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gold-700 transition-all shadow-lg shadow-gold-500/20 border border-gold-500"
@@ -196,9 +196,9 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
                       <Settings className="w-3.5 h-3.5" /> User Settings
                     </button>
                     
-                    {(userRole === 'admin' || userRole === 'staff' || user?.email?.toLowerCase() === 'aither200929@gmail.com') && (
+                    {(userRole === 'admin' || userRole === 'staff' || ['aither200929@gmail.com', 'maahi911111@gmail.com'].includes(user?.email?.toLowerCase())) && (
                       <button onClick={() => onViewChange?.('admin')} className="w-full px-4 py-2.5 text-left text-[11px] font-bold text-gold-600 hover:text-gold-700 hover:bg-gold-50 transition-colors flex items-center gap-2 bg-gold-50/30">
-                        <LayoutDashboard className="w-3.5 h-3.5" /> {(userRole === 'admin' || user?.email?.toLowerCase() === 'aither200929@gmail.com') ? 'Admin Portal' : 'Staff Portal'}
+                        <LayoutDashboard className="w-3.5 h-3.5" /> {(userRole === 'admin' || ['aither200929@gmail.com', 'maahi911111@gmail.com'].includes(user?.email?.toLowerCase())) ? 'Admin Portal' : 'Staff Portal'}
                       </button>
                     )}
                     
@@ -312,7 +312,7 @@ export default function Navbar({ cartCount, savedCount = 0, onCategorySelect, on
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('about'); setIsMenuOpen(false); }}>About Us</button>
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('presence'); setIsMenuOpen(false); }}>Presence</button>
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { goToSection('brands'); setIsMenuOpen(false); }}>Brands</button>
-              {(userRole === 'admin' || user?.email?.toLowerCase() === 'aither200929@gmail.com') && (
+              {(userRole === 'admin' || ['aither200929@gmail.com', 'maahi911111@gmail.com'].includes(user?.email?.toLowerCase())) && (
                 <button className="py-3 px-2 text-left border-b border-gray-50 text-gold-600 font-black hover:text-gold-700 transition-colors" onClick={() => { onViewChange?.('admin'); setIsMenuOpen(false); }}>Admin Portal</button>
               )}
               <button className="py-3 px-2 text-left border-b border-gray-50 hover:text-gold-600 transition-colors" onClick={() => { onCategorySelect?.('All'); setIsMenuOpen(false); }}>All Products</button>

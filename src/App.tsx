@@ -49,13 +49,33 @@ export default function App() {
   });
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const [userRole, setUserRole] = useState<'customer' | 'staff' | 'admin'>('customer');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<'customer' | 'staff' | 'admin'>(() => {
+    // Hydrate from cache for immediate UI responsiveness on reload
+    return (localStorage.getItem('test_one_user_role') as any) || 'customer';
+  });
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [heroSlides, setHeroSlides] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // Constants for admin emails
+  const ADMIN_EMAILS = ['aither200929@gmail.com', 'maahi911111@gmail.com'];
+
+  // Helper to determine role
+  const getRoleForUser = async (u: any): Promise<'customer' | 'staff' | 'admin'> => {
+    if (!u) return 'customer';
+    if (ADMIN_EMAILS.includes(u.email?.toLowerCase())) return 'admin';
+    
+    try {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', u.id).single();
+      return (profile?.role as any) || 'customer';
+    } catch (err) {
+      console.error('Error fetching role:', err);
+      return 'customer';
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('test_one_saved_products', JSON.stringify(savedProducts));
@@ -100,22 +120,32 @@ export default function App() {
     // 1. Initial Session Check
     const initAuth = async () => {
       try {
+        console.log('initAuth: starting');
         setIsAuthLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sError } = await supabase.auth.getSession();
         
+        if (sError) {
+          console.error('initAuth: getSession error:', sError);
+          return;
+        }
+
         if (session?.user) {
+          console.log('initAuth: session found', session.user.email);
           setUser(session.user);
-          // Immediate role check
-          if (session.user.email?.toLowerCase() === 'aither200929@gmail.com') {
-            setUserRole('admin');
-          } else {
-            const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-            if (profile) setUserRole(profile.role);
-          }
+          const role = await getRoleForUser(session.user);
+          setUserRole(role);
+          localStorage.setItem('test_one_user_role', role);
+          localStorage.setItem('test_one_user_email', session.user.email || '');
+        } else {
+          console.log('initAuth: no session found');
+          setUserRole('customer');
+          localStorage.removeItem('test_one_user_role');
+          localStorage.removeItem('test_one_user_email');
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
       } finally {
+        console.log('initAuth: finishing');
         setIsAuthLoading(false);
       }
     };
@@ -142,17 +172,19 @@ export default function App() {
     // 2. Auth State Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change:', event, session?.user?.email);
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
       
-      if (session?.user) {
-        if (session.user.email?.toLowerCase() === 'aither200929@gmail.com') {
-          setUserRole('admin');
-        } else {
-          const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-          if (profile) setUserRole(profile.role);
-        }
+      if (currentUser) {
+        const role = await getRoleForUser(currentUser);
+        setUserRole(role);
+        // Cache for faster reload
+        localStorage.setItem('test_one_user_role', role);
+        localStorage.setItem('test_one_user_email', currentUser.email || '');
       } else {
         setUserRole('customer');
+        localStorage.removeItem('test_one_user_role');
+        localStorage.removeItem('test_one_user_email');
         if (event === 'SIGNED_OUT') {
           setView('home');
         }
