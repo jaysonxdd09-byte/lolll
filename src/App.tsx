@@ -66,11 +66,13 @@ export default function App() {
       try {
         console.log('fetchData: starting');
         setIsLoading(true);
-        // Add a failsafe timeout
-        const timeoutId = setTimeout(() => {
-          console.warn('fetchData: timeout reached, forcing isLoading to false');
-          setIsLoading(false);
-        }, 5000);
+        // Add a failsafe timeout for data fetching
+        const dataTimeoutId = setTimeout(() => {
+          if (isLoading) {
+            console.warn('fetchData: timeout reached, forcing isLoading to false');
+            setIsLoading(false);
+          }
+        }, 6000);
 
         // Fetch Products
         console.log('fetchData: fetching products');
@@ -84,7 +86,7 @@ export default function App() {
         if (sError) console.error('Error fetching slides:', sError);
         if (sData) setHeroSlides(sData);
 
-        clearTimeout(timeoutId);
+        clearTimeout(dataTimeoutId);
         console.log('fetchData: complete');
       } catch (error) {
         console.error('Error in fetchData:', error);
@@ -117,8 +119,25 @@ export default function App() {
         setIsAuthLoading(false);
       }
     };
+    
+    // Add a failsafe timeout for auth initialization
+    const authTimeoutId = setTimeout(() => {
+      if (isAuthLoading) {
+        console.warn('initAuth: timeout reached, forcing isAuthLoading to false');
+        setIsAuthLoading(false);
+      }
+    }, 6000);
 
     initAuth();
+
+    // Global failsafe: Force both loading states to false after 10 seconds no matter what
+    const globalTimeoutId = setTimeout(() => {
+      if (isLoading || isAuthLoading) {
+        console.warn('Global loading timeout reached: forcing all loaders to false');
+        setIsLoading(false);
+        setIsAuthLoading(false);
+      }
+    }, 10000);
 
     // 2. Auth State Listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -166,6 +185,8 @@ export default function App() {
       subscription.unsubscribe();
       supabase.removeChannel(productsChannel);
       window.removeEventListener('change-view', handleCustomViewChange);
+      clearTimeout(authTimeoutId);
+      clearTimeout(globalTimeoutId);
     };
   }, []);
 

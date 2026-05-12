@@ -10,21 +10,32 @@ const Preloader: React.FC<PreloaderProps> = ({ isLoading }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let timer: NodeJS.Timeout;
+    
+    const updateProgress = () => {
       setProgress((prev) => {
-        if (prev >= 90) {
-          if (!isLoading) {
-            clearInterval(interval);
-            setTimeout(() => setIsVisible(false), 500);
+        if (isLoading) {
+          // If still loading, slowly crawl towards 99%
+          if (prev >= 98) return 99;
+          if (prev >= 90) return prev + 0.1; // Slow down near the end
+          return prev + Math.random() * 5; // Moderate speed initially
+        } else {
+          // If loading is finished, jump to 100% and hide
+          if (prev < 100) {
+            setTimeout(() => setIsVisible(false), 800);
             return 100;
           }
-          return 95; // Wait at 95% until loading finishes
+          return 100;
         }
-        return prev + Math.random() * 15;
       });
-    }, 150);
+      
+      const nextTick = isLoading ? 150 : 50;
+      timer = setTimeout(updateProgress, nextTick);
+    };
 
-    return () => clearInterval(interval);
+    timer = setTimeout(updateProgress, 150);
+
+    return () => clearTimeout(timer);
   }, [isLoading]);
 
   return (
