@@ -43,7 +43,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isSaved
   const slogan = slogans[product.id];
 
   const price = typeof product.price === 'number' ? product.price : 0;
-  const stock = typeof product.stock_quantity === 'number' ? product.stock_quantity : 0;
+  const stock = Number(product.stock_quantity ?? 0);
+  const mrpVal = product.mrp || (price * 1.25);
+  const discountPct = Math.round(((mrpVal - price) / mrpVal) * 100);
 
   return (
     <motion.div 
@@ -63,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isSaved
           referrerPolicy="no-referrer"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://images.unsplash.com/photo-1584032791593-51833075d9fb?auto=format&fit=crop&q=80&w=400';
+            target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=400';
           }}
         />
 
@@ -104,6 +106,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isSaved
 
       {/* Content Area */}
       <div className="p-2.5 sm:p-4 flex flex-col flex-1">
+        <div className="flex items-center gap-1.5 mb-1">
+          {product.brand === 'Test One' && (
+            <span className="bg-gold-50 text-gold-600 border border-gold-200 text-[7px] font-extrabold uppercase px-1 rounded">Test One</span>
+          )}
+          {product.code && (
+            <span className="text-[8px] font-mono text-gray-400 font-semibold uppercase">{product.code}</span>
+          )}
+          {product.gst && (
+            <span className="text-[8px] text-gray-400 font-bold ml-auto">GST: {product.gst}</span>
+          )}
+        </div>
+
         <h3 className="text-[12px] sm:text-[15px] font-semibold text-gray-900 mb-1.5 sm:mb-2 leading-snug group-hover:text-gold-700 transition-colors line-clamp-2 min-h-[2.2rem] sm:min-h-[2.6rem]">
           {product.name || 'Untitled Product'}
         </h3>
@@ -113,36 +127,45 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isSaved
           <p className="sm:hidden text-[8px] uppercase tracking-[0.12em] text-gray-400">Pro Price</p>
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-2">
+        <div className="flex items-baseline justify-between mb-3 border-t border-gray-50 pt-3">
           <div className="flex flex-col">
-            <div className="flex items-end gap-1.5">
-              <span className="text-[15px] sm:text-xl font-bold text-gray-900 leading-none">${price.toFixed(2)}</span>
-              <span className="text-[9px] sm:text-[11px] text-gray-400 line-through mb-0.5">${(price * 1.25).toFixed(2)}</span>
+            <div className="flex items-baseline gap-1 flex-wrap">
+              <span className="text-[14px] sm:text-[16px] font-black text-gray-900 leading-none">₹{price.toLocaleString('en-IN')}</span>
+              {mrpVal > price && (
+                <span className="text-[9px] sm:text-[10px] text-gray-400 line-through">₹{mrpVal.toLocaleString('en-IN')}</span>
+              )}
             </div>
-            <p className="text-[8px] sm:text-[10px] text-emerald-600 font-semibold mt-0.5">Save {Math.round(((price * 1.25 - price) / (price * 1.25)) * 100)}%</p>
+            {discountPct > 0 && (
+              <p className="text-[8px] sm:text-[9.5px] text-emerald-600 font-bold mt-0.5">Save {discountPct}%</p>
+            )}
           </div>
           
           {stock === 0 ? (
-            <span className="text-[8px] sm:text-[10px] font-bold uppercase text-red-600 bg-red-50 border border-red-100 px-1.5 py-1 rounded-md sm:rounded-lg">Out</span>
+            <span className="text-[8px] font-extrabold uppercase text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-md">Out of Stock</span>
           ) : (
-            <div className="flex flex-col gap-2">
-              <button 
-                onClick={(e) => { e.stopPropagation(); onBuyNow?.(product); }}
-                className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg bg-gold-600 text-white hover:bg-gold-700 transition-all active:scale-95 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider"
-              >
-                Buy Now
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-                className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-900/10 flex items-center justify-center gap-1.5"
-                aria-label={`Add ${product.name || 'product'} to cart`}
-              >
-                <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Add</span>
-              </button>
-            </div>
+            <span className="text-[8px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">In Stock</span>
           )}
         </div>
+
+        {/* Buttons Action Block side by side */}
+        {stock > 0 && (
+          <div className="grid grid-cols-2 gap-1.5 mt-auto pt-1">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onBuyNow?.(product); }}
+              className="w-full h-8 rounded-lg bg-gold-600 text-white hover:bg-gold-700 transition-all active:scale-95 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider flex items-center justify-center shadow-sm shadow-gold-500/10"
+            >
+              Buy Now
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+              className="w-full h-8 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-all active:scale-95 shadow-sm shadow-gray-900/10 flex items-center justify-center gap-1"
+              aria-label={`Add ${product.name || 'product'} to cart`}
+            >
+              <ShoppingCart className="w-2.5 h-2.5" />
+              <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider">Add</span>
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );

@@ -27,6 +27,8 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'shipping'>('description');
+  const stock = Number(product.stock_quantity ?? 0);
+  const outOfStock = stock <= 0;
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta));
@@ -97,9 +99,9 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
 
             {/* Quick Specs */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                <div className="w-8 h-8 bg-gold-50 rounded-lg flex items-center justify-center text-gold-500"><Package className="w-4 h-4" /></div>
-                <div><div className="text-[9px] font-bold text-gray-400 uppercase">In Stock</div><div className="text-xs font-bold text-gray-900">Ready to Ship</div></div>
+              <div className={`p-3 rounded-xl border flex items-center gap-3 ${outOfStock ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100'}`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${outOfStock ? 'bg-red-100 text-red-500' : 'bg-gold-50 text-gold-500'}`}><Package className="w-4 h-4" /></div>
+                <div><div className="text-[9px] font-bold text-gray-400 uppercase">{outOfStock ? 'Availability' : 'In Stock'}</div><div className={`text-xs font-bold ${outOfStock ? 'text-red-600' : 'text-gray-900'}`}>{outOfStock ? 'Out of Stock' : `Ready to Ship (${stock} units)`}</div></div>
               </div>
               <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
                 <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-500"><Truck className="w-4 h-4" /></div>
@@ -112,13 +114,13 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Quantity</span>
                 <div className="flex items-center gap-4 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                  <button onClick={() => handleQuantityChange(-1)} disabled={product.stock_quantity === 0} className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-gold-600 transition-colors disabled:opacity-50"><Minus className="w-3 h-3" /></button>
+                  <button onClick={() => handleQuantityChange(-1)} disabled={outOfStock} className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-gold-600 transition-colors disabled:opacity-50"><Minus className="w-3 h-3" /></button>
                   <span className="text-sm font-bold text-gray-900 min-w-[20px] text-center">{quantity}</span>
-                  <button onClick={() => handleQuantityChange(1)} disabled={product.stock_quantity === 0} className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-gold-600 transition-colors disabled:opacity-50"><Plus className="w-3 h-3" /></button>
+                  <button onClick={() => handleQuantityChange(1)} disabled={outOfStock} className="w-7 h-7 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-gold-600 transition-colors disabled:opacity-50"><Plus className="w-3 h-3" /></button>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                {product.stock_quantity === 0 ? (
+                {outOfStock ? (
                   <div className="flex-1 bg-red-50 text-red-600 border border-red-100 py-4 rounded-xl font-bold text-xs uppercase tracking-widest text-center shadow-sm">
                     Temporarily Out of Stock
                   </div>

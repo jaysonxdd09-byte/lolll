@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { pb } from '../../../lib/pbClient';
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 
 export default function UsersTab() {
@@ -16,11 +16,17 @@ export default function UsersTab() {
       // Failsafe timeout
       const timeoutId = setTimeout(() => setLoading(false), 3000);
       
-      const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      const data = await pb.collection('users').getFullList({
+        sort: '-created'
+      });
       clearTimeout(timeoutId);
       
-      if (error) throw error;
-      if (data) setUsers(data);
+      const mappedData = data.map(item => ({
+        ...item,
+        created_at: item.created,
+        updated_at: item.updated
+      }));
+      setUsers(mappedData);
     } catch (err) {
       console.error('Error fetching users:', err);
     } finally {
@@ -29,7 +35,7 @@ export default function UsersTab() {
   };
 
   const handleUpdateRole = async (id: string, newRole: string) => {
-    await supabase.from('profiles').update({ role: newRole }).eq('id', id);
+    await pb.collection('users').update(id, { role: newRole });
     fetchUsers();
   };
 

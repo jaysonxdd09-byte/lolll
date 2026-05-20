@@ -1,102 +1,62 @@
-import { supabase } from './supabaseClient';
+import { pb } from './pbClient';
 
-type RecordMap = Record<string, any>;
-
-function storageKey(table: string) {
-  return `testone:${table}`;
-}
-
-function readLocal(table: string): RecordMap[] {
+export async function loadCollection<T>(
+  table: string,
+  orderBy?: { column: string; ascending?: boolean }
+): Promise<T[]> {
   try {
-    const raw = localStorage.getItem(storageKey(table));
-    return raw ? JSON.parse(raw) : [];
-  } catch {
+    const options: Record<string, any> = {};
+    if (orderBy) {
+      let col = orderBy.column;
+      if (col === 'created_at') col = 'created';
+      if (col === 'updated_at') col = 'updated';
+      options.sort = (orderBy.ascending ?? false) ? col : `-${col}`;
+    }
+    const data = await pb.collection(table).getFullList(options);
+    return data.map(record => ({
+      ...record,
+      created_at: record.created,
+      updated_at: record.updated,
+    })) as unknown as T[];
+  } catch (err) {
+    console.error(`Load collection failed for ${table}:`, err);
     return [];
   }
 }
 
-function writeLocal(table: string, items: RecordMap[]) {
-  localStorage.setItem(storageKey(table), JSON.stringify(items));
+export async function createRecord<T>(table: string, payload: any): Promise<T> {
+  const saved = await pb.collection(table).create(payload);
+  return {
+    ...saved,
+    created_at: saved.created,
+    updated_at: saved.updated,
+  } as unknown as T;
 }
 
-export async function loadCollection<T extends RecordMap>(
-  table: string,
-  orderBy?: { column: string; ascending?: boolean },
-  fallback: T[] = []
-): Promise<T[]> {
+export async function upsertRecord<T>(table: string, payload: any): Promise<T> {
+  const id = payload.id;
   try {
-    let query = supabase.from(table).select('*');
-    if (orderBy) {
-      query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
+    let saved;
+    try {
+      saved = await pb.collection(table).update(id, payload);
+    } catch (err: any) {
+      saved = await pb.collection(table).create({ ...payload, id });
     }
-    const { data, error } = await query;
-    if (error) throw error;
-    if (Array.isArray(data) && data.length > 0) return data as T[];
-
-    const local = readLocal(table);
-    if (local.length > 0) return local as T[];
-
-    if (fallback.length > 0) {
-      writeLocal(table, fallback);
-    }
-    return fallback;
-  } catch {
-    const local = readLocal(table);
-    if (local.length > 0) return local as T[];
-
-    if (fallback.length > 0) {
-      writeLocal(table, fallback);
-    }
-    return fallback;
-  }
-}
-
-export async function createRecord<T extends RecordMap>(table: string, payload: T): Promise<T> {
-  const localPayload = {
-    id: payload.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    created_at: payload.created_at || new Date().toISOString(),
-    ...payload,
-  } as T;
-
-  try {
-    const { data, error } = await supabase.from(table).insert([payload as any]).select('*').single();
-    if (error) throw error;
-    return (data as T) || localPayload;
-  } catch {
-    const local = readLocal(table);
-    writeLocal(table, [localPayload, ...local]);
-    return localPayload;
-  }
-}
-
-export async function upsertRecord<T extends RecordMap>(table: string, payload: T): Promise<T> {
-  const id = payload.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const localPayload = {
-    ...payload,
-    id,
-    updated_at: new Date().toISOString(),
-  } as T;
-
-  try {
-    const { data, error } = await supabase.from(table).upsert([localPayload as any]).select('*').single();
-    if (error) throw error;
-    return (data as T) || localPayload;
-  } catch {
-    const local = readLocal(table);
-    const next = local.some((item) => item.id === id)
-      ? local.map((item) => (item.id === id ? { ...item, ...localPayload } : item))
-      : [localPayload, ...local];
-    writeLocal(table, next);
-    return localPayload;
+    return {
+      ...saved,
+      created_at: saved.created,
+      updated_at: saved.updated,
+    } as unknown as T;
+  } catch (err) {
+    console.error(`Upsert failed for ${table}:`, err);
+    throw err;
   }
 }
 
 export async function deleteRecord(table: string, id: string) {
   try {
-    const { error } = await supabase.from(table).delete().eq('id', id);
-    if (error) throw error;
-  } catch {
-    const local = readLocal(table).filter((item) => item.id !== id);
-    writeLocal(table, local);
+    await pb.collection(table).delete(id);
+  } catch (err) {
+    console.error(`Delete failed for ${table}/${id}:`, err);
   }
 }

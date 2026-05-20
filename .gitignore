@@ -8,3 +8,6 @@ dist-ssr
 .vercel
 .vscode
 .DS_Store
+pb_data/
+pocketbase.exe
+data/

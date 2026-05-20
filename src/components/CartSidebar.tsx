@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ShoppingCart, Trash2, Plus, Minus, ShoppingBag, Loader2 } from 'lucide-react';
 import { Product } from '../data/products';
-import { supabase } from '../lib/supabaseClient';
+import { pb } from '../lib/pbClient';
 import CheckoutForm, { ShippingDetails } from './CheckoutForm';
 
 interface CartItem {
@@ -56,35 +56,27 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, items, onRem
     try {
       // 1. Create order
       const fullAddress = `${details.address}, ${details.city}, ${details.state} - ${details.pincode}`;
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          customer_name: details.fullName,
-          email: user.email,
-          total_amount: totalPrice,
-          status: 'Pending',
-          shipping_address: fullAddress,
-          phone: details.phone
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
+      const orderData = await pb.collection('orders').create({
+        user_id: user.id,
+        customer_name: details.fullName,
+        email: user.email,
+        total_amount: totalPrice,
+        status: 'Pending',
+        shipping_address: fullAddress,
+        phone: details.phone
+      });
 
       // 2. Create order items
-      const orderItems = cartItems.map(item => ({
-        order_id: orderData.id,
-        product_id: item.product.id,
-        quantity: item.quantity,
-        unit_price: item.product.price
-      }));
+      const createItemPromises = cartItems.map(item =>
+        pb.collection('order_items').create({
+          order_id: orderData.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          unit_price: item.product.price
+        })
+      );
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
+      await Promise.all(createItemPromises);
 
       // 3. Complete checkout
       setShowCheckoutForm(false);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { pb } from '../../../lib/pbClient';
 import { Eye } from 'lucide-react';
+import { formatINR } from '../../../lib/formatCurrency';
 
 export default function OrdersTab({ userRole }: { userRole: string }) {
   const [orders, setOrders] = useState<any[]>([]);
@@ -20,11 +21,17 @@ export default function OrdersTab({ userRole }: { userRole: string }) {
       // Failsafe timeout
       const timeoutId = setTimeout(() => setLoading(false), 3000);
       
-      const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      const data = await pb.collection('orders').getFullList({
+        sort: '-created'
+      });
       clearTimeout(timeoutId);
       
-      if (error) throw error;
-      if (data) setOrders(data);
+      const mappedData = data.map(item => ({
+        ...item,
+        created_at: item.created,
+        updated_at: item.updated
+      }));
+      setOrders(mappedData);
     } catch (err) {
       console.error('Error fetching orders:', err);
     } finally {
@@ -33,7 +40,7 @@ export default function OrdersTab({ userRole }: { userRole: string }) {
   };
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
-    await supabase.from('orders').update({ status: newStatus }).eq('id', id);
+    await pb.collection('orders').update(id, { status: newStatus });
     fetchOrders();
   };
 
@@ -68,7 +75,7 @@ export default function OrdersTab({ userRole }: { userRole: string }) {
                   <p className="text-xs text-gray-500">{order.email}</p>
                 </td>
                 <td className="px-6 py-4 text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
-                <td className="px-6 py-4 font-medium">${order.total_amount.toFixed(2)}</td>
+                <td className="px-6 py-4 font-medium">{formatINR(order.total_amount || 0)}</td>
                 <td className="px-6 py-4">
                   <select 
                     value={order.status}

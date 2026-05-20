@@ -1,0 +1,14 @@
+
+    <div>
+      <ProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        product={selectedProduct}
+        readOnly={selectedProduct?._source === 'catalog' && false}
+      />
+
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        <motionless />
+      </motionless>
+    </motionless>

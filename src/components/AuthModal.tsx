@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Mail, Lock, User, Github, Chrome, ArrowRight, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
+import { pb } from '../lib/pbClient';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,16 +22,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        await pb.collection('users').authWithPassword(email, password);
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        alert('Check your email for the confirmation link!');
+        await pb.collection('users').create({
+          email,
+          password,
+          passwordConfirm: password,
+          emailVisibility: true,
+        });
+        try {
+          await pb.collection('users').requestVerification(email);
+        } catch (err) {
+          console.warn('Verification request failed (maybe mailer not configured):', err);
+        }
+        alert('Account created! Please check your email for the verification link.');
+        // Auto-login after registration for convenience
+        await pb.collection('users').authWithPassword(email, password);
       }
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }
@@ -39,15 +49,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
+      await pb.collection('users').authWithOAuth2({
+        provider: 'google'
       });
-      if (error) throw error;
+      onClose();
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Google Sign-In failed');
     }
   };
 

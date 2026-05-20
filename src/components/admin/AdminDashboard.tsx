@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Package, ShoppingBag, Image as ImageIcon, Users, FileText, BarChart3 } from 'lucide-react';
-import { supabase } from '../../lib/supabaseClient';
+import { LayoutDashboard, Package, ShoppingBag, Image as ImageIcon, Users, FileText, BarChart3, Sparkles, Layers } from 'lucide-react';
 
 import OverviewTab from './tabs/OverviewTab';
 import ProductsTab from './tabs/ProductsTab';
@@ -9,6 +8,8 @@ import HeroTab from './tabs/HeroTab';
 import UsersTab from './tabs/UsersTab';
 import BlogsTab from './tabs/BlogsTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
+import PromoTab from './tabs/PromoTab';
+import FeaturesTab from './tabs/FeaturesTab';
 
 interface AdminDashboardProps {
   user: any;
@@ -16,9 +17,9 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, userRole }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'hero' | 'users' | 'blogs' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'hero' | 'users' | 'blogs' | 'analytics' | 'promo' | 'features'>('overview');
 
-  if (userRole === 'customer' && user?.email?.toLowerCase() !== 'aither200929@gmail.com') {
+  if (userRole === 'customer' && !['aither200929@gmail.com', 'maahi911111@gmail.com'].includes(user?.email?.toLowerCase() || '')) {
     return <div className="min-h-screen flex items-center justify-center pt-24"><p>Access Denied.</p></div>;
   }
 
@@ -26,7 +27,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, userRole }) => {
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'staff'] },
     { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" />, roles: ['admin'] },
     { id: 'orders', label: 'Orders', icon: <ShoppingBag className="w-5 h-5" />, roles: ['admin', 'staff'] },
+    { id: 'features', label: 'Features', icon: <Layers className="w-5 h-5" />, roles: ['admin', 'staff'] },
     { id: 'products', label: 'Products', icon: <Package className="w-5 h-5" />, roles: ['admin'] },
+    { id: 'promo', label: 'Promo', icon: <Sparkles className="w-5 h-5" />, roles: ['admin'] },
     { id: 'hero', label: 'Hero Slides', icon: <ImageIcon className="w-5 h-5" />, roles: ['admin'] },
     { id: 'blogs', label: 'Blogs', icon: <FileText className="w-5 h-5" />, roles: ['admin', 'staff'] },
     { id: 'users', label: 'Users', icon: <Users className="w-5 h-5" />, roles: ['admin'] },
@@ -67,6 +70,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, userRole }) => {
           {activeTab === 'products' && <ProductsTab />}
           {activeTab === 'hero' && <HeroTab />}
           {activeTab === 'blogs' && <BlogsTab />}
+          {activeTab === 'promo' && <PromoTab />}
+          {activeTab === 'features' && <FeaturesTab />}
           {activeTab === 'users' && <UsersTab />}
         </div>
       </main>

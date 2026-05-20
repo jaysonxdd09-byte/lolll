@@ -27,7 +27,7 @@ const defaultSlides = [
     badge: 'ISO Certified Quality'
   },
   {
-    image: 'https://images.unsplash.com/photo-1530497610245-b1baa0e1af72?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=2000',
     title: ['Global', 'Reach.'],
     subtitle: 'Serving healthcare institutions across 40+ countries with reliable logistics and dedicated support teams.',
     badge: 'Worldwide Distribution'

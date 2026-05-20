@@ -68,7 +68,7 @@ const BrandSection: React.FC<BrandSectionProps> = ({ onBrandClick }) => {
                       <img 
                         src={brand.logo} 
                         alt="" 
-                        className="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-700"
+                        className="max-w-full max-h-full object-contain transition-all duration-700"
                         onError={() => handleImageError(brand.name)}
                       />
                     ) : (

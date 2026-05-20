@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { pb } from '../../../lib/pbClient';
 import { Plus, Edit2, Trash2, Image as ImageIcon } from 'lucide-react';
 import HeroModal from '../modals/HeroModal';
 
@@ -16,9 +16,10 @@ export default function HeroTab() {
   const fetchSlides = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('hero_slides').select('*').order('order_index', { ascending: true });
-      if (error) throw error;
-      if (data) setSlides(data);
+      const data = await pb.collection('hero_slides').getFullList({
+        sort: 'order_index'
+      });
+      setSlides(data);
     } catch (err) {
       console.error('Error fetching slides:', err);
     } finally {
@@ -29,11 +30,9 @@ export default function HeroTab() {
   const handleSave = async (slideData: any) => {
     try {
       if (slideData.id) {
-        const { error } = await supabase.from('hero_slides').update(slideData).eq('id', slideData.id);
-        if (error) throw error;
+        await pb.collection('hero_slides').update(slideData.id, slideData);
       } else {
-        const { error } = await supabase.from('hero_slides').insert([slideData]);
-        if (error) throw error;
+        await pb.collection('hero_slides').create(slideData);
       }
       fetchSlides();
     } catch (err) {
@@ -55,8 +54,7 @@ export default function HeroTab() {
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this slide?')) {
       try {
-        const { error } = await supabase.from('hero_slides').delete().eq('id', id);
-        if (error) throw error;
+        await pb.collection('hero_slides').delete(id);
         fetchSlides();
       } catch (err: any) {
         console.error('Error deleting slide:', err);

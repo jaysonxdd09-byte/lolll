@@ -1,42 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+const LOADER_DURATION_MS = 1500;
+
 interface PreloaderProps {
   isLoading: boolean;
 }
 
-const Preloader: React.FC<PreloaderProps> = ({ isLoading }) => {
+const Preloader: React.FC<PreloaderProps> = () => {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
-    const updateProgress = () => {
-      setProgress((prev) => {
-        if (isLoading) {
-          // If still loading, slowly crawl towards 99%
-          if (prev >= 98) return 99;
-          if (prev >= 90) return prev + 0.1; // Slow down near the end
-          return prev + Math.random() * 5; // Moderate speed initially
-        } else {
-          // If loading is finished, jump to 100% and hide
-          if (prev < 100) {
-            setTimeout(() => setIsVisible(false), 800);
-            return 100;
-          }
-          return 100;
-        }
-      });
-      
-      const nextTick = isLoading ? 150 : 50;
-      timer = setTimeout(updateProgress, nextTick);
+    const start = performance.now();
+    let rafId = 0;
+    let hideTimer: ReturnType<typeof setTimeout>;
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const pct = Math.min(100, (elapsed / LOADER_DURATION_MS) * 100);
+      setProgress(pct);
+
+      if (elapsed < LOADER_DURATION_MS) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        setProgress(100);
+        hideTimer = setTimeout(() => setIsVisible(false), 150);
+      }
     };
 
-    timer = setTimeout(updateProgress, 150);
+    rafId = requestAnimationFrame(tick);
 
-    return () => clearTimeout(timer);
-  }, [isLoading]);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
   return (
     <AnimatePresence>
@@ -44,7 +43,7 @@ const Preloader: React.FC<PreloaderProps> = ({ isLoading }) => {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
+          transition={{ duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] }}
           className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center p-8"
         >
           <div className="relative max-w-sm w-full space-y-12 text-center">
