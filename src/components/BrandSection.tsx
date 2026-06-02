@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ChevronRight, Shield, Activity, Zap, Heart, Globe, Plus, Award, Package } from 'lucide-react';
+import { ChevronRight, Shield, Activity, Zap, Heart, Globe, Plus, Award, Package, Scissors, Stethoscope, Layers, Bandage, Syringe, BarChart2 } from 'lucide-react';
 
 interface Brand {
   name: string;
@@ -9,15 +9,16 @@ interface Brand {
   Icon: React.ElementType;
 }
 
+// Only brands that have products in our database (based on products.ts)
 const brands: Brand[] = [
-  { name: 'Romsons', color: '#006d5b', logo: '/images/brands/romsons.png', Icon: Shield },
-  { name: 'Polymed', color: '#008ba3', logo: '/images/brands/polymed.png', Icon: Activity },
-  { name: 'Coloplast', color: '#002f6c', logo: '/images/brands/coloplast.png', Icon: Globe },
-  { name: '3M', color: '#ff0000', logo: '/images/brands/3m.png', Icon: Award },
-  { name: 'Dr. Morepen', color: '#f37021', logo: '/images/brands/morepen.png', Icon: Plus },
-  { name: 'Adlisc', color: '#e31e24', logo: '/images/brands/adlisc.png', Icon: Zap },
-  { name: 'Friends', color: '#39b54a', logo: '/images/brands/friends.png', Icon: Heart },
-  { name: 'Flamingo', color: '#662d91', logo: '/images/brands/flamingo.png', Icon: Package }
+  { name: '3M',                 color: '#ff0000', logo: '/images/brands/3m.png',              Icon: Award },
+  { name: 'Smith & Nephew',     color: '#0055a5', logo: '/images/brands/smith and nephew.png', Icon: Stethoscope },
+  { name: 'Surgiwear',          color: '#006633', logo: '/images/brands/surfiwear.jpg',       Icon: Layers },
+  { name: 'BSN Essity',         color: '#00527e', logo: '/images/brands/bsn.jpg',              Icon: Bandage },
+  { name: 'Paramount',          color: '#1a6fc4', logo: '/images/brands/paramount.jpg',       Icon: Shield },
+  { name: 'Sanvin Care Pvt Ltd', color: '#d4af37', logo: '/images/logo/logo.png',              Icon: Heart },
+  { name: 'ESS KAE Medicure',    color: '#008080', logo: '/images/logo/logo.png',              Icon: Syringe },
+  { name: 'Test One',           color: '#b8860b', logo: '/images/logo/logo.png',              Icon: Package },
 ];
 
 interface BrandSectionProps {
@@ -39,14 +40,14 @@ const BrandSection: React.FC<BrandSectionProps> = ({ onBrandClick }) => {
           <div className="flex items-center gap-4">
             <h2 className="text-sm font-bold text-gray-900 uppercase tracking-[0.2em]">Brands</h2>
           </div>
-          <button className="text-[10px] font-bold text-gold-600 uppercase tracking-widest hover:text-gold-700 flex items-center gap-2 group transition-all">
+          <button className="text-[10px] font-bold text-primary-600 uppercase tracking-widest hover:text-primary-700 flex items-center gap-2 group transition-all">
             View all Brand
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
         {/* 3D Rounded Squares Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-6 mb-12">
           {brands.map((brand, index) => (
             <motion.div
               key={brand.name}
@@ -57,7 +58,7 @@ const BrandSection: React.FC<BrandSectionProps> = ({ onBrandClick }) => {
               onClick={() => onBrandClick(brand.name)}
               className="group relative cursor-pointer"
             >
-              <div className="aspect-square bg-white border border-gray-100 rounded-[32px] shadow-sm hover:shadow-xl hover:shadow-gold-500/10 transition-all duration-500 flex items-center justify-center p-6 relative overflow-hidden group-hover:-translate-y-2">
+              <div className="aspect-square bg-white border border-gray-100 rounded-[32px] shadow-sm hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-500 flex items-center justify-center p-6 relative overflow-hidden group-hover:-translate-y-2">
                 {/* 3D Glass Effect Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -98,13 +99,10 @@ const BrandSection: React.FC<BrandSectionProps> = ({ onBrandClick }) => {
           ))}
         </div>
 
-        {/* Bottom Section Label */}
-        <div className="pt-6 border-t border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-[0.2em]">Most Popular</h3>
-        </div>
       </div>
     </section>
   );
 };
 
 export default BrandSection;
+

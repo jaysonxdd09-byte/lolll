@@ -1,6 +1,5 @@
 import { Product, products as catalogProducts, categories } from '../data/products';
 import { loadCollection, upsertRecord, deleteRecord } from './contentStore';
-import { pb } from './pbClient';
 
 export type ProductSource = 'catalog' | 'database' | 'synced';
 
@@ -12,9 +11,10 @@ export const productCategories = categories.filter((c) => c !== 'All');
 
 /** Storefront + admin: get the live products directly from localStorage */
 export function mergeStorefrontProducts(dbProducts: Product[]): Product[] {
-  // dbProducts is already the live data from pb_col_products (localStorage)
-  // Just normalize numeric fields
-  return dbProducts.map(p => ({
+  // If no database products, return catalog products
+  const sourceProducts = dbProducts.length > 0 ? dbProducts : catalogProducts;
+  // Normalize numeric fields
+  return sourceProducts.map(p => ({
     ...p,
     price: Number(p.price ?? 0),
     stock_quantity: Number(p.stock_quantity ?? 0),
@@ -100,7 +100,7 @@ export async function saveAdminProduct(product: Partial<Product>): Promise<void>
     throw new Error('Product id and name are required');
   }
 
-  // Save directly to pb_col_products via pbClient (which writes to localStorage)
+  // Save directly to pb_col_products via dbClient (which writes to localStorage)
   await upsertRecord('products', payload);
 
   if (typeof window !== 'undefined') {
@@ -130,7 +130,7 @@ export async function syncCatalogToDatabase(): Promise<{ synced: number; failed:
 
 export function getCatalogStats() {
   // Read live data from localStorage instead of hardcoded catalog
-  const liveKey = 'pb_col_products';
+  const liveKey = 'local_col_products';
   let liveProducts: Product[] = [];
   try {
     const raw = localStorage.getItem(liveKey);
@@ -153,4 +153,5 @@ export function getCatalogStats() {
     outOfStockCount: outOfStock.length,
   };
 }
+
 

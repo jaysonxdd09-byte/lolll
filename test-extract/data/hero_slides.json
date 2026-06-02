@@ -1,0 +1,20 @@
+[
+  {
+    "id": "slide0000000001",
+    "created": "2026-05-19T18:36:19.094Z",
+    "updated": "2026-05-19T18:36:19.094Z",
+    "title": "Premium Medical Drapes & Gowns",
+    "subtitle": "ISO 13485:2016 Certified Sterile Medical Products",
+    "image_url": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+    "order_index": 0
+  },
+  {
+    "id": "slide0000000002",
+    "created": "2026-05-19T18:36:19.106Z",
+    "updated": "2026-05-19T18:36:19.106Z",
+    "title": "Advanced Surgical Kits",
+    "subtitle": "Tailored for specialized orthopedic and general surgeries",
+    "image_url": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80",
+    "order_index": 1
+  }
+]
