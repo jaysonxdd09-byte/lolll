@@ -10,3 +10,6 @@ dist-ssr
 .DS_Store
 pb_data/
 pocketbase.exe
+test.zip
+testone.pem
+test-extract/
